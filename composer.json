@@ -1,0 +1,26 @@
+{
+  "name": "adimeo-data-suite/sharepoint",
+  "autoload": {
+    "psr-4": { "AdimeoDataSuite\\": "" }
+  },
+  "require": {
+    "vgrem/php-spo": "*",
+    "adimeo-data-suite/commons": "dev-master",
+    "adimeo-data-suite/security": "dev-master",
+    "adimeo-data-suite/filters": "dev-master"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/louisicard/adimeo-data-suite-security"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/louisicard/adimeo-data-suite-commons"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/louisicard/adimeo-data-suite-filters"
+    }
+  ]
+}
