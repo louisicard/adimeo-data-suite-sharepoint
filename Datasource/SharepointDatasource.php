@@ -2,7 +2,6 @@
 
 namespace AdimeoDataSuite\Datasource;
 
-use AdimeoDataSuite\Exception\DatasourceExecutionException;
 use AdimeoDataSuite\Model\Datasource;
 use Office365\PHP\Client\Runtime\Auth\AuthenticationContext;
 use Office365\PHP\Client\Runtime\Utilities\RequestOptions;
@@ -59,10 +58,11 @@ class SharepointDatasource extends Datasource
   function getExecutionArgumentFields()
   {
     return array(
-      'last_modified_time' => array(
+      'search_request' => array(
         'type' => 'text',
-        'label' => 'Last modified date (YYYY-MM-dd HH:mm:ss)',
-        'required' => true
+        'label' => 'Sharepoint search request (See doc https://docs.microsoft.com/fr-fr/sharepoint/dev/general-development/keyword-query-language-kql-syntax-reference)',
+        'required' => true,
+        'default_from_settings' => true
       )
     );
   }
@@ -74,22 +74,14 @@ class SharepointDatasource extends Datasource
 
   function execute($args)
   {
-    if(isset($args['last_modified_time'])) {
-      $lastModifiedTime = \DateTime::createFromFormat('Y-m-d H:i:s', $args['last_modified_time']);
-    }
-    if(isset($lastModifiedTime) && $lastModifiedTime) {
-      $this->querySharepoint($lastModifiedTime);
-      $this->getOutputManager()->writeLn('Found ' . $this->globalCount . ' documents');
-    }
-    else {
-      throw new DatasourceExecutionException('Argument last_modified_time is not a valid date/time (format should be YYYY-MM-dd HH:mm:ss)');
-    }
+    $this->querySharepoint($args['search_request']);
+    $this->getOutputManager()->writeLn('Found ' . $this->globalCount . ' documents');
   }
 
   private $authContext = null;
   private $globalCount = 0;
 
-  private function querySharepoint(\DateTime $lastModifiedTime, $from = 0) {
+  private function querySharepoint($searchRequest, $from = 0) {
     if($this->authContext == null) {
       $this->authContext = new AuthenticationContext($this->getSettings()['company_url']);
       $this->authContext->acquireTokenForUser($this->getSettings()['username'], $this->getSettings()['password']);
@@ -104,7 +96,7 @@ class SharepointDatasource extends Datasource
       }
     }
 
-    $searchQuery = "'(" . $this->getSettings()['search_request'] . ") AND LastModifiedTime>" . $lastModifiedTime->format('Y-m-d\TH:i:s') . " AND IsDocument:true'";
+    $searchQuery = "'(" . $searchRequest . ") AND IsDocument:true'";
 
     $searchUrl = trim($this->getSettings()['company_url'], '/')
       . "/_api/search/query?"
@@ -147,7 +139,7 @@ class SharepointDatasource extends Datasource
       $this->globalCount++;
     }
     if($count > 0) {
-      $this->querySharepoint($lastModifiedTime, $from + static::SHAREPOINT_PAGER_SIZE);
+      $this->querySharepoint($searchRequest, $from + static::SHAREPOINT_PAGER_SIZE);
     }
 
   }
