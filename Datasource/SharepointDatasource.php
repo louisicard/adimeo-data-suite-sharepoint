@@ -16,6 +16,7 @@ class SharepointDatasource extends Datasource
   function getOutputFields()
   {
     return array(
+      'authContext',
       'docPath',
       'relativePath',
       'siteName',
@@ -126,6 +127,7 @@ class SharepointDatasource extends Datasource
         }
       }
       $to_index = [
+        'authContext' => $this->authContext,
         'docPath' => isset($doc['Path']) ? $doc['Path'] : null,
         'relativePath' => null,
         'siteName' => isset($doc['SiteName']) ? $doc['SiteName'] : null,
