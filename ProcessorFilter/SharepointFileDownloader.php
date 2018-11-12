@@ -43,7 +43,7 @@ class SharepointFileDownloader extends ProcessorFilter
 
   function getArguments()
   {
-    array(
+    return array(
       'siteName' => 'Site name',
       'relativePath' => 'Relative path'
     );
