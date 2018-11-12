@@ -77,15 +77,21 @@ class SharepointDatasource extends Datasource
     }
     if(isset($lastModifiedTime) && $lastModifiedTime) {
       $this->querySharepoint($lastModifiedTime);
+      $this->getOutputManager()->writeLn('Found ' . $this->globalCount . ' documents');
     }
     else {
       throw new DatasourceExecutionException('Argument last_modified_time is not a valid date/time (format should be YYYY-MM-dd HH:mm:ss)');
     }
   }
 
+  private $authContext = null;
+  private $globalCount = 0;
+
   private function querySharepoint(\DateTime $lastModifiedTime, $from = 0) {
-    $authCtx = new AuthenticationContext($this->getSettings()['company_url']);
-    $authCtx->acquireTokenForUser($this->getSettings()['username'], $this->getSettings()['password']);
+    if($this->authContext == null) {
+      $this->authContext = new AuthenticationContext($this->getSettings()['company_url']);
+      $this->authContext->acquireTokenForUser($this->getSettings()['username'], $this->getSettings()['password']);
+    }
 
     $selectProperties = ['Path', 'LastModifiedTime', 'SiteName'];
     if(isset($this->getSettings()['select_properties']) && !empty($this->getSettings()['select_properties'])) {
@@ -107,7 +113,7 @@ class SharepointDatasource extends Datasource
       . "&startrow=" . $from;
 
     $request = new RequestOptions($searchUrl);
-    $ctx = new ClientContext($searchUrl, $authCtx);
+    $ctx = new ClientContext($searchUrl, $this->authContext);
     $data = $ctx->executeQueryDirect($request);
 
     $data = json_decode($data, TRUE);
@@ -134,6 +140,7 @@ class SharepointDatasource extends Datasource
       }
       $this->index($to_index);
       $count++;
+      $this->globalCount++;
     }
     if($count > 0) {
       $this->querySharepoint($lastModifiedTime, $from + static::SHAREPOINT_PAGER_SIZE);
