@@ -17,6 +17,7 @@ class SharepointDatasource extends Datasource
   {
     return array(
       'authContext',
+      'docId',
       'docPath',
       'relativePath',
       'siteName',
@@ -128,6 +129,7 @@ class SharepointDatasource extends Datasource
       }
       $to_index = [
         'authContext' => $this->authContext,
+        'docId' => isset($doc['DocId']) ? $doc['DocId'] : null,
         'docPath' => isset($doc['Path']) ? $doc['Path'] : null,
         'relativePath' => null,
         'siteName' => isset($doc['SiteName']) ? $doc['SiteName'] : null,
