@@ -102,7 +102,7 @@ class SharepointChangeLogs extends Datasource
             'authContext' => $this->authContext,
             'operation' => $op,
             'itemId' => $itemId,
-            'siteName' => $site
+            'siteName' => strtolower($site)
           ));
         }
       }
