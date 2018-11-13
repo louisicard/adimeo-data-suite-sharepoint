@@ -28,7 +28,7 @@ class SharepointDocumentRetriever extends ProcessorFilter
 
   function getFields()
   {
-    return array('document');
+    return array('doc');
   }
 
   function getArguments()
