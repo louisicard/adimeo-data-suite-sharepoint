@@ -106,7 +106,7 @@ class SharepointChangeLogs extends Datasource
           $this->index(array(
             'authContext' => $this->authContext,
             'operation' => $op,
-            'uniqueId' => $uniqueId,
+            'uniqueId' => strtolower($uniqueId),
             'siteName' => strtolower($site)
           ));
         }

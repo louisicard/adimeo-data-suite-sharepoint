@@ -126,7 +126,7 @@ class SharepointSearch extends Datasource
         'docPath' => isset($doc['Path']) ? $doc['Path'] : null,
         'relativePath' => null,
         'siteName' => isset($doc['SiteName']) ? $doc['SiteName'] : null,
-        'uniqueId' => isset($doc['UniqueId']) ? trim($doc['UniqueId'], '{}') : null,
+        'uniqueId' => isset($doc['UniqueId']) ? strtolower(trim($doc['UniqueId'], '{}')) : null,
         'properties' => $doc
       ];
       if(isset($doc['Path'])) {
