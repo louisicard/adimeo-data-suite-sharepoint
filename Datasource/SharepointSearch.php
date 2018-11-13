@@ -7,7 +7,7 @@ use Office365\PHP\Client\Runtime\Auth\AuthenticationContext;
 use Office365\PHP\Client\Runtime\Utilities\RequestOptions;
 use Office365\PHP\Client\SharePoint\ClientContext;
 
-class SharepointDatasource extends Datasource
+class SharepointSearch extends Datasource
 {
 
   const SHAREPOINT_PAGER_SIZE = 500;
@@ -69,7 +69,7 @@ class SharepointDatasource extends Datasource
 
   function getDisplayName()
   {
-    return 'Sharepoint datasource';
+    return 'Sharepoint search';
   }
 
   function execute($args)

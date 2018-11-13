@@ -17,23 +17,7 @@ class SharepointFileDownloader extends ProcessorFilter
 
   function getSettingFields()
   {
-    return array(
-      'company_url' => array(
-        'type' => 'text',
-        'label' => 'Company url (E.g.: https://mycompany.sharepoint.com)',
-        'required' => true
-      ),
-      'username' => array(
-        'type' => 'text',
-        'label' => 'Username',
-        'required' => true
-      ),
-      'password' => array(
-        'type' => 'text',
-        'label' => 'Password',
-        'required' => true
-      )
-    );
+    return array();
   }
 
   function getFields()
@@ -44,6 +28,7 @@ class SharepointFileDownloader extends ProcessorFilter
   function getArguments()
   {
     return array(
+      'authContext' => 'Authentication context',
       'siteName' => 'Site name',
       'relativePath' => 'Relative path'
     );
@@ -51,8 +36,8 @@ class SharepointFileDownloader extends ProcessorFilter
 
   function execute(&$document, Datasource $datasource)
   {
-    $authCtx = new AuthenticationContext($this->getSettings()['company_url']);
-    $authCtx->acquireTokenForUser($this->getSettings()['username'], $this->getSettings()['password']);
+    /** @var AuthenticationContext $authCtx */
+    $authCtx = $this->getArgumentValue('authContext', $document);
 
     $downloadUrl = $this->getArgumentValue('siteName', $document) . "/_api/web/GetFileByServerRelativeUrl('" . rawurlencode($this->getArgumentValue('relativePath', $document)) . "')/\$value?@target='" . urlencode($this->getSettings()['company_url']) . "'";
     $fileRequest = new RequestOptions($downloadUrl);
