@@ -39,7 +39,10 @@ class SharepointFileDownloader extends ProcessorFilter
     /** @var AuthenticationContext $authCtx */
     $authCtx = $this->getArgumentValue('authContext', $document);
 
-    $downloadUrl = $this->getArgumentValue('siteName', $document) . "/_api/web/GetFileByServerRelativeUrl('" . rawurlencode($this->getArgumentValue('relativePath', $document)) . "')/\$value?@target='" . urlencode($this->getSettings()['company_url']) . "'";
+    $path_r = explode('//', $this->getArgumentValue('siteName', $document));
+    $companyUrl = 'https://' . explode('/', $path_r[1])[0];
+
+    $downloadUrl = $this->getArgumentValue('siteName', $document) . "/_api/web/GetFileByServerRelativeUrl('" . rawurlencode($this->getArgumentValue('relativePath', $document)) . "')/\$value?@target='" . urlencode($companyUrl) . "'";
     $fileRequest = new RequestOptions($downloadUrl);
     $ctxFile = new ClientContext($downloadUrl, $authCtx);
     $content = $ctxFile->executeQueryDirect($fileRequest);
