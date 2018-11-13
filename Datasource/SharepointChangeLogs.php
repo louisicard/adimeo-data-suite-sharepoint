@@ -22,7 +22,7 @@ class SharepointChangeLogs extends Datasource
     return array(
       'authContext',
       'operation',
-      'itemId',
+      'uniqueId',
       'siteName'
     );
   }
@@ -102,11 +102,11 @@ class SharepointChangeLogs extends Datasource
         //Nothing to do
       }
       foreach($logs as $op => $entries) {
-        foreach($entries as $itemId => $changeToken) {
+        foreach($entries as $uniqueId => $changeToken) {
           $this->index(array(
             'authContext' => $this->authContext,
             'operation' => $op,
-            'itemId' => $itemId,
+            'uniqueId' => $uniqueId,
             'siteName' => strtolower($site)
           ));
         }
