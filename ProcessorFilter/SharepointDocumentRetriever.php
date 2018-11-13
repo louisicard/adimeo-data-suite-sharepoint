@@ -55,7 +55,7 @@ class SharepointDocumentRetriever extends ProcessorFilter
   }
 
   private function searchForDocument(AuthenticationContext $authContext, $companyUrl, $uniqueId) {
-    $searchQuery = "'UniqueId:\"" . $uniqueId . "\"'";
+    $searchQuery = "'UniqueId:\"{" . $uniqueId . "}\"'";
 
     $searchUrl = trim($companyUrl, '/')
       . "/_api/search/query?"
