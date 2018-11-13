@@ -96,7 +96,6 @@ class SharepointChangeLogs extends Datasource
       catch(\Exception $ex) {
         //Nothing to do
       }
-      print_r($logs);
       foreach($logs as $op => $entries) {
         foreach($entries as $itemId => $changeToken) {
           $this->index(array(
