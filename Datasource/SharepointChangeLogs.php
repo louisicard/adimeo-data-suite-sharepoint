@@ -138,7 +138,7 @@ class SharepointChangeLogs extends Datasource
       $lastToken = $change->ChangeToken;
       $time = \DateTime::createFromFormat('Y-m-d\TH:i:s\Z', $change->Time);
       if($time) {
-        if(!$time->diff($lastModified)->invert) {
+        if(!$lastModified->diff($time)->invert) {
           $itemId = $change->getProperty('ItemId');
           if ($changeTypeName == 'Add' || $changeTypeName == 'Update') {
             $logs['to_index'][$itemId] = serialize($change->ChangeToken);
