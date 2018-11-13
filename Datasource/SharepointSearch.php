@@ -20,6 +20,7 @@ class SharepointSearch extends Datasource
       'docPath',
       'relativePath',
       'siteName',
+      'uniqueId',
       'properties'
     );
   }
@@ -87,7 +88,7 @@ class SharepointSearch extends Datasource
       $this->authContext->acquireTokenForUser($this->getSettings()['username'], $this->getSettings()['password']);
     }
 
-    $selectProperties = ['Path', 'LastModifiedTime', 'SiteName'];
+    $selectProperties = ['Path', 'LastModifiedTime', 'SiteName', 'UniqueId'];
     if(isset($this->getSettings()['select_properties']) && !empty($this->getSettings()['select_properties'])) {
       foreach(array_map('trim', explode(',', $this->getSettings()['select_properties'])) as $prop) {
         if(!in_array($prop, $selectProperties)) {
@@ -125,6 +126,7 @@ class SharepointSearch extends Datasource
         'docPath' => isset($doc['Path']) ? $doc['Path'] : null,
         'relativePath' => null,
         'siteName' => isset($doc['SiteName']) ? $doc['SiteName'] : null,
+        'uniqueId' => isset($doc['UniqueId']) ? trim($doc['UniqueId'], '{}') : null,
         'properties' => $doc
       ];
       if(isset($doc['Path'])) {

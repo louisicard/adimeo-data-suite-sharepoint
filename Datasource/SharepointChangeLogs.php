@@ -71,6 +71,11 @@ class SharepointChangeLogs extends Datasource
       throw new DatasourceExecutionException('Argument last_modified_time is incorrect. Expected format is Y-m-d H:i:s');
     }
 
+    if($this->authContext == null) {
+      $this->authContext = new AuthenticationContext($this->getSettings()['company_url']);
+      $this->authContext->acquireTokenForUser($this->getSettings()['username'], $this->getSettings()['password']);
+    }
+
     //Get Sites
     $this->getOutputManager()->writeLn('Searching for sites...');
     $sites = [];
@@ -137,15 +142,15 @@ class SharepointChangeLogs extends Datasource
       $changeTypeName = ChangeType::getName($change->ChangeType);
       $lastToken = $change->ChangeToken;
       $time = \DateTime::createFromFormat('Y-m-d\TH:i:s\Z', $change->Time);
-      if($time) {
+      $properties = $change->getProperties();
+      if($time && isset($properties['UniqueId'])) {
         if(!$lastModified->diff($time)->invert) {
-          $itemId = $change->getProperty('ItemId');
           if ($changeTypeName == 'Add' || $changeTypeName == 'Update') {
-            $logs['to_index'][$itemId] = serialize($change->ChangeToken);
+            $logs['to_index'][$properties['UniqueId']] = serialize($change->ChangeToken);
           } elseif ($changeTypeName == 'DeleteObject') {
-            $logs['to_delete'][$itemId] = serialize($change->ChangeToken);
-            if (in_array($itemId, array_keys($logs['to_index']))) {
-              unset($logs['to_index'][$itemId]);
+            $logs['to_delete'][$properties['UniqueId']] = serialize($change->ChangeToken);
+            if (in_array($properties['UniqueId'], array_keys($logs['to_index']))) {
+              unset($logs['to_index'][$properties['UniqueId']]);
             }
           }
         }
@@ -157,12 +162,7 @@ class SharepointChangeLogs extends Datasource
   }
 
   private function searchSites(&$sites, $from = 0) {
-    if($this->authContext == null) {
-      $this->authContext = new AuthenticationContext($this->getSettings()['company_url']);
-      $this->authContext->acquireTokenForUser($this->getSettings()['username'], $this->getSettings()['password']);
-    }
-
-    $searchQuery = "'contentclass:STS_Site'";
+    $searchQuery = "'contentclass:STS_Site OR contentclass:STS_Web'";
 
     $searchUrl = trim($this->getSettings()['company_url'], '/')
       . "/_api/search/query?"

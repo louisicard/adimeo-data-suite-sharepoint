@@ -36,7 +36,7 @@ class SharepointDocumentRetriever extends ProcessorFilter
     return array(
       'authContext' => 'Authentication context',
       'siteName' => 'Site name',
-      'itemId' => 'Item ID (in site document library)'
+      'uniqueId' => 'Element unique ID'
     );
   }
 
@@ -45,35 +45,17 @@ class SharepointDocumentRetriever extends ProcessorFilter
     /** @var AuthenticationContext $authCtx */
     $authCtx = $this->getArgumentValue('authContext', $document);
 
-    $url = $this->getArgumentValue('siteName', $document) . "/_api/web/lists/getByTitle('Documents')/items?\$select=EncodedAbsUrl,FileSystemObjectType&\$filter=" . rawurlencode('Id eq ' . $this->getArgumentValue('itemId', $document));
-    $request = new \Office365\PHP\Client\Runtime\Utilities\RequestOptions($url);
-    $ctx = new ClientContext($url, $authCtx);
-    $data = $ctx->executeQueryDirect($request);
+    $path_r = explode('//', $this->getArgumentValue('siteName', $document));
+    $companyUrl = 'https://' . explode('/', $path_r[1])[0];
 
-    $data = json_decode($data, TRUE);
-    if(isset($data['d']['results'][0])) {
-      $props = $data['d']['results'][0];
-      if($this->getSettings()['docs_only'] && $props['FileSystemObjectType'] === 0 || !$this->getSettings()['docs_only']) {
-        $path = $props['EncodedAbsUrl'];
-        return array(
-          'doc' => $this->searchForDocument($authCtx, $path)
-        );
-      }
-      else {
-        $document = [];
-        return NULL;
-      }
-    }
+    $uniqueId = $this->getArgumentValue('uniqueId', $document);
     return array(
-      'doc' => NULL
+      'doc' => $this->searchForDocument($authCtx, $companyUrl, $uniqueId)
     );
   }
 
-  private function searchForDocument(AuthenticationContext $authContext, $path) {
-    $searchQuery = "'Path:\"" . $path . "\"'";
-
-    $path_r = explode('//', $path);
-    $companyUrl = 'https://' . explode('/', $path_r[1])[0];
+  private function searchForDocument(AuthenticationContext $authContext, $companyUrl, $uniqueId) {
+    $searchQuery = "'UniqueId:\"" . $uniqueId . "\"'";
 
     $searchUrl = trim($companyUrl, '/')
       . "/_api/search/query?"
