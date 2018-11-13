@@ -92,6 +92,13 @@ class SharepointDocumentRetriever extends ProcessorFilter
           $doc[$cell['Key']] = $cell['Value'];
         }
       }
+      if(isset($doc['Path'])) {
+        $tmp_r = explode('//', $doc['Path']);
+        $tmp_rr = explode('/', $tmp_r[1]);
+        $tmp_rr = array_slice($tmp_rr, 1);
+        $relativePath = '/' . implode('/', $tmp_rr);
+        $doc['relativePath'] = $relativePath;
+      }
       return $doc;
     }
 
