@@ -5,6 +5,6 @@
   },
   "require": {
     "vgrem/php-spo": "*",
-    "adimeo-data-suite/commons": "dev-master"
+    "adimeo-data-suite/commons": "*"
   }
 }
